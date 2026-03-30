@@ -6,7 +6,13 @@ const checkResponse = (res) => {
   }
   return res.json().then((err) => Promise.reject(err));
 };
+
 const headersWithContentType = { "Content-Type": "application/json" };
+
+const authHeaders = () => ({
+  "Content-Type": "application/json",
+  authorization: `Token ${localStorage.getItem("auth_token")}`,
+});
 
 export const registerUser = (username, password) => {
   return fetch(`${URL}/api/users/`, {
@@ -35,10 +41,7 @@ export const loginUser = (username, password) => {
 export const logoutUser = () => {
   return fetch(`${URL}/api/token/logout/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
+    headers: authHeaders(),
   }).then((res) => {
     if (res.status === 204) {
       localStorage.removeItem("auth_token");
@@ -51,50 +54,42 @@ export const logoutUser = () => {
 export const getUser = () => {
   return fetch(`${URL}/api/users/me/`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
+    headers: authHeaders(),
   }).then(checkResponse);
 };
 
 export const getCards = (page = 1) => {
   return fetch(`${URL}/api/cats/?page=${page}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
+    headers: authHeaders(),
+  }).then(checkResponse);
+};
+
+export const getFosterCards = (page = 1) => {
+  return fetch(`${URL}/api/cats/foster/?active_contract=true&page=${page}`, {
+    method: "GET",
+    headers: authHeaders(),
   }).then(checkResponse);
 };
 
 export const getCard = (id) => {
   return fetch(`${URL}/api/cats/${id}/`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
+    headers: authHeaders(),
   }).then(checkResponse);
 };
 
 export const getAchievements = () => {
   return fetch(`${URL}/api/achievements/`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
+    headers: authHeaders(),
   }).then(checkResponse);
 };
 
 export const sendCard = (card) => {
   return fetch(`${URL}/api/cats/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
+    headers: authHeaders(),
     body: JSON.stringify(card),
   }).then(checkResponse);
 };
@@ -102,10 +97,7 @@ export const sendCard = (card) => {
 export const updateCard = (card, id) => {
   return fetch(`${URL}/api/cats/${id}/`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
+    headers: authHeaders(),
     body: JSON.stringify(card),
   }).then(checkResponse);
 };
@@ -113,14 +105,50 @@ export const updateCard = (card, id) => {
 export const deleteCard = (id) => {
   return fetch(`${URL}/api/cats/${id}/`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
+    headers: authHeaders(),
   }).then((res) => {
     if (res.status === 204) {
       return { status: true };
     }
     return { status: false };
   });
+};
+
+export const createOwnershipStatus = (payload) => {
+  return fetch(`${URL}/api/ownership-statuses/`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  }).then(checkResponse);
+};
+
+export const updateOwnershipStatus = (id, payload) => {
+  return fetch(`${URL}/api/ownership-statuses/${id}/`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  }).then(checkResponse);
+};
+
+export const createFosterContract = (payload) => {
+  return fetch(`${URL}/api/foster-contracts/`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  }).then(checkResponse);
+};
+
+export const updateFosterContract = (id, payload) => {
+  return fetch(`${URL}/api/foster-contracts/${id}/`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  }).then(checkResponse);
+};
+
+export const closeFosterContract = (id) => {
+  return fetch(`${URL}/api/foster-contracts/${id}/close/`, {
+    method: "POST",
+    headers: authHeaders(),
+  }).then(checkResponse);
 };

@@ -1,0 +1,172 @@
+{
+  "info": {
+    "_postman_id": "3b1d3ef5-0f3d-4cbe-a6c1-foster-collection",
+    "name": "Kittygram Foster API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:9000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "catId",
+      "value": "1"
+    },
+    {
+      "key": "contractId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"olga\",\n  \"password\": \"olgapass\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/token/login/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "token",
+            "login",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Foster Cats",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/cats/foster/?active_contract=true",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "cats",
+            "foster",
+            ""
+          ],
+          "query": [
+            {
+              "key": "active_contract",
+              "value": "true"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Ownership Status",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Token {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cat\": {{catId}},\n  \"status\": \"foster\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/ownership-statuses/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "ownership-statuses",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Foster Contract",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Token {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cat\": {{catId}},\n  \"start_date\": \"2026-03-30\",\n  \"end_date\": \"2026-04-15\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/foster-contracts/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "foster-contracts",
+            ""
+          ]
+        }
+      }
+    },
+    {
+      "name": "Close Foster Contract",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/foster-contracts/{{contractId}}/close/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "foster-contracts",
+            "{{contractId}}",
+            "close",
+            ""
+          ]
+        }
+      }
+    }
+  ]
+}

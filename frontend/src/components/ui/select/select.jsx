@@ -1,6 +1,7 @@
 import React from "react";
 
 import { getAchievements } from "../../../utils/api";
+import { formatAchievementsText } from "../../../utils/constants";
 
 import arrowDownIcon from "../../../images/arrow-down.svg";
 import arrowUpIcon from "../../../images/arrow-up.svg";
@@ -70,7 +71,7 @@ export const Select = ({
       }
     }
     if (result.length) {
-      setText(result.join(", "));
+      setText(formatAchievementsText(result));
     } else {
       setText("Достижения");
     }
@@ -122,7 +123,7 @@ export const Select = ({
         obj[item] = true;
       });
       setCurrentAchievements(obj);
-      setText(userAchievements);
+      setText(formatAchievementsText(userAchievements));
     }
   }, [userAchievements]);
 

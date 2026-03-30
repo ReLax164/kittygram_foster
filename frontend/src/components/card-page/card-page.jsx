@@ -2,6 +2,11 @@ import React from "react";
 import { useHistory, useParams } from "react-router-dom";
 
 import { deleteCard, getCard } from "../../utils/api";
+import {
+  formatAchievementsText,
+  formatDisplayDate,
+  ownershipStatusLabels,
+} from "../../utils/constants";
 import { UserContext } from "../../utils/context";
 
 import returnIcon from "../../images/left.svg";
@@ -26,13 +31,13 @@ export const CardPage = ({ data, setData, extraClass = "" }) => {
       if (res && res.id) {
         setData(res);
 
-        let resString = "";
+        let resultString = "";
         res.achievements.forEach((item) => {
-          resString
-            ? (resString += `, ${item.achievement_name}`)
-            : (resString = item.achievement_name);
+          resultString
+            ? (resultString += `, ${item.achievement_name}`)
+            : (resultString = item.achievement_name);
         });
-        setAchievements(resString);
+        setAchievements(formatAchievementsText(resultString));
       }
     });
   }, [params.id, setData]);
@@ -61,6 +66,11 @@ export const CardPage = ({ data, setData, extraClass = "" }) => {
     data.color === "darkgray"
       ? "white"
       : "primary";
+
+  const statusClass =
+    data.ownership_status === "foster"
+      ? styles.status_foster
+      : styles.status_home;
 
   return (
     <article className={`${styles.content} ${extraClass}`}>
@@ -121,6 +131,26 @@ export const CardPage = ({ data, setData, extraClass = "" }) => {
       <p className={`text text_type_h3 text_color_secondary ${styles.date}`}>
         {data.birth_year}
       </p>
+      <div className={`${styles.status_box} ${statusClass}`}>
+        <p className={`text text_type_medium-20 ${styles.status_text}`}>
+          {ownershipStatusLabels[data.ownership_status] || "Статус не указан"}
+        </p>
+      </div>
+      {data.active_foster_contract && (
+        <div className={styles.contract_box}>
+          <p
+            className={`text text_type_h3 text_color_primary ${styles.contract_title}`}
+          >
+            Договор передержки
+          </p>
+          <p
+            className={`text text_type_medium-20 text_color_secondary ${styles.contract_text}`}
+          >
+            c {formatDisplayDate(data.active_foster_contract.start_date)} по{" "}
+            {formatDisplayDate(data.active_foster_contract.end_date)}
+          </p>
+        </div>
+      )}
       <div
         className={styles.cat_color_box}
         style={{ backgroundColor: data.color }}

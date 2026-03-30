@@ -1,6 +1,6 @@
 import React from "react";
 
-import { getCards } from "../../utils/api";
+import { getCards, getFosterCards } from "../../utils/api";
 
 import { MainCard } from "../main-card/main-card";
 import { PaginationBox } from "../pagination-box/pagination-box";
@@ -10,9 +10,12 @@ import styles from "./main-page.module.css";
 export const MainPage = ({ queryPage, setQueryPage, extraClass = "" }) => {
   const [cards, setCards] = React.useState([]);
   const [pagData, setPagData] = React.useState({});
+  const [mode, setMode] = React.useState("all");
 
   React.useEffect(() => {
-    getCards(queryPage)
+    const loader = mode === "foster" ? getFosterCards : getCards;
+
+    loader(queryPage)
       .then((res) => {
         setPagData({
           count: res.count,
@@ -22,7 +25,7 @@ export const MainPage = ({ queryPage, setQueryPage, extraClass = "" }) => {
       })
       .catch((err) => {
         if (err.detail === "Invalid page.") {
-          getCards(queryPage - 1)
+          loader(queryPage - 1)
             .then((res) => {
               setQueryPage(queryPage - 1);
               setPagData({
@@ -31,22 +34,45 @@ export const MainPage = ({ queryPage, setQueryPage, extraClass = "" }) => {
               });
               setCards(res.results);
             })
-            .catch((err) => {
-              console.error(err);
+            .catch((innerErr) => {
+              console.error(innerErr);
             });
         } else {
           console.error(err);
         }
       });
-  }, [queryPage, setQueryPage]);
+  }, [mode, queryPage, setQueryPage]);
+
+  const switchMode = (nextMode) => {
+    setQueryPage(1);
+    setMode(nextMode);
+  };
 
   return (
     <section className={`${styles.content} ${extraClass}`}>
       <h2
         className={`text text_type_h2 text_color_primary mt-25 mb-20 ${styles.title}`}
       >
-        Замечательные коты
+        {mode === "foster" ? "Коты на передержке" : "Замечательные коты"}
       </h2>
+
+      <div className={styles.filters}>
+        <button
+          type="button"
+          className={`${styles.filter_btn} ${mode === "all" ? styles.filter_btn_active : ""}`}
+          onClick={() => switchMode("all")}
+        >
+          Все коты
+        </button>
+        <button
+          type="button"
+          className={`${styles.filter_btn} ${mode === "foster" ? styles.filter_btn_active : ""}`}
+          onClick={() => switchMode("foster")}
+        >
+          На передержке
+        </button>
+      </div>
+
       <div className={styles.box}>
         {cards.map((item, index) => {
           return (
@@ -57,6 +83,8 @@ export const MainPage = ({ queryPage, setQueryPage, extraClass = "" }) => {
               name={item.name}
               date={item.birth_year}
               color={item.color}
+              ownershipStatus={item.ownership_status}
+              activeFosterContract={item.active_foster_contract}
             />
           );
         })}

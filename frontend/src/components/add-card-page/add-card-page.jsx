@@ -2,7 +2,11 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 
 import { sendCard } from "../../utils/api";
-import { colorsList, getBase64 } from "../../utils/constants";
+import {
+  colorsList,
+  getBase64,
+  ownershipStatusLabels,
+} from "../../utils/constants";
 
 import returnIcon from "../../images/left.svg";
 import addImgIcon from "../../images/image.svg";
@@ -15,6 +19,20 @@ import { ColorsBox } from "../ui/colors-box/colors-box";
 
 import styles from "./add-card-page.module.css";
 
+const getFirstError = (res) => {
+  if (!res || typeof res !== "object") {
+    return "Не удалось сохранить изменения.";
+  }
+  const value = Object.values(res)[0];
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  if (typeof value === "string") {
+    return value;
+  }
+  return "Не удалось сохранить изменения.";
+};
+
 export const AddCardPage = ({ extraClass = "" }) => {
   const [currentColor, setCurrentColor] = React.useState("#FFFFFF");
   const [currentFileName, setCurrentFileName] = React.useState("");
@@ -22,8 +40,15 @@ export const AddCardPage = ({ extraClass = "" }) => {
     color: currentColor,
     achievements: [],
   });
+  const [ownershipStatus, setOwnershipStatus] = React.useState("home");
+  const [fosterDates, setFosterDates] = React.useState({
+    start_date: "",
+    end_date: "",
+  });
   const [errorName, setErrorName] = React.useState("");
   const [errorAge, setErrorAge] = React.useState("");
+  const [errorDates, setErrorDates] = React.useState("");
+  const [formError, setFormError] = React.useState("");
 
   const history = useHistory();
 
@@ -36,40 +61,76 @@ export const AddCardPage = ({ extraClass = "" }) => {
       ...card,
       [e.target.name]: e.target.value,
     });
-    e.target.name === "image" && setCurrentFileName(e.target.value);
+    if (e.target.name === "image") {
+      setCurrentFileName(e.target.value);
+    }
+  };
+
+  const onChangeStatus = (e) => {
+    setOwnershipStatus(e.target.value);
+    setFormError("");
+    if (e.target.value === "home") {
+      setErrorDates("");
+    }
+  };
+
+  const onChangeFosterDate = (e) => {
+    setFosterDates({
+      ...fosterDates,
+      [e.target.name]: e.target.value,
+    });
+    setErrorDates("");
   };
 
   const handleResponse = (res) => {
     if (typeof res.name === "object") {
-      setErrorName("Поле с именем является обязательным");
+      setErrorName("Поле с именем является обязательным.");
     } else if (typeof res.birth_year === "object") {
-      setErrorAge("Поле с годом рождения является обязательным");
+      setErrorAge("Поле с годом рождения является обязательным.");
+    } else {
+      setFormError(getFirstError(res));
     }
   };
 
   const handleSubmit = () => {
-    errorAge && setErrorAge("");
-    errorName && setErrorName("");
+    if (
+      ownershipStatus === "foster" &&
+      (!fosterDates.start_date || !fosterDates.end_date)
+    ) {
+      setErrorDates("Для передержки нужно указать даты договора.");
+      return;
+    }
+
+    if (errorAge) setErrorAge("");
+    if (errorName) setErrorName("");
+    if (errorDates) setErrorDates("");
+    if (formError) setFormError("");
 
     const photo = document.querySelector('input[type="file"]').files[0];
-    photo
-      ? getBase64(photo).then((data) => {
-          card["image"] = data;
-          sendCard(card)
-            .then((res) => {
-              if (res && res.id) {
-                history.push(`/cats/${res.id}`);
-              }
-            })
-            .catch(handleResponse);
-        })
-      : sendCard(card)
-          .then((res) => {
-            if (res && res.id) {
-              history.push(`/cats/${res.id}`);
-            }
-          })
-          .catch(handleResponse);
+    const payload = {
+      ...card,
+      ownership_status_value: ownershipStatus,
+    };
+
+    if (ownershipStatus === "foster") {
+      payload.foster_start_date = fosterDates.start_date;
+      payload.foster_end_date = fosterDates.end_date;
+    }
+
+    const onCardCreated = (res) => {
+      if (res && res.id) {
+        history.push(`/cats/${res.id}`);
+      }
+    };
+
+    if (photo) {
+      getBase64(photo).then((data) => {
+        const cardWithImage = { ...payload, image: data };
+        sendCard(cardWithImage).then(onCardCreated).catch(handleResponse);
+      });
+    } else {
+      sendCard(payload).then(onCardCreated).catch(handleResponse);
+    }
   };
 
   return (
@@ -90,9 +151,7 @@ export const AddCardPage = ({ extraClass = "" }) => {
             alt="Добавить фото котика."
           />
           <p className="text text_type_medium-16 text_color_primary">
-            {currentFileName
-              ? currentFileName
-              : "Загрузите фото в фотрмате JPG"}
+            {currentFileName ? currentFileName : "Загрузите фото в формате JPG"}
           </p>
         </label>
         <input
@@ -124,6 +183,57 @@ export const AddCardPage = ({ extraClass = "" }) => {
           setCard={setCard}
         />
         <Select card={card} setCard={setCard} />
+
+        <div className={styles.status_box}>
+          <p
+            className={`text text_type_medium-16 text_color_primary ${styles.section_label}`}
+          >
+            Статус владения
+          </p>
+          <select
+            className={styles.status_select}
+            value={ownershipStatus}
+            onChange={onChangeStatus}
+          >
+            {Object.entries(ownershipStatusLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {ownershipStatus === "foster" && (
+          <div className={styles.contract_box}>
+            <p
+              className={`text text_type_medium-16 text_color_primary ${styles.section_label}`}
+            >
+              Договор передержки
+            </p>
+            <Input
+              onChange={onChangeFosterDate}
+              name="start_date"
+              type="date"
+              value={fosterDates.start_date}
+            />
+            <Input
+              onChange={onChangeFosterDate}
+              name="end_date"
+              type="date"
+              value={fosterDates.end_date}
+              error={errorDates}
+            />
+          </div>
+        )}
+
+        {formError && (
+          <p
+            className={`text text_type_medium-16 text_color_red ${styles.form_error}`}
+          >
+            {formError}
+          </p>
+        )}
+
         <ButtonForm
           extraClass={styles.submit_btn}
           text="Сохранить"

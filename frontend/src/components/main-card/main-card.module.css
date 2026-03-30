@@ -1,5 +1,6 @@
 .content {
   width: 206px;
+  min-height: 352px;
   padding: 12px;
   border-radius: var(--button-border-radius);
   box-shadow: 0px 100px 80px rgba(119, 119, 119, 0.03),
@@ -8,7 +9,7 @@
     0px 4px 3px rgba(119, 119, 119, 0.02);
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .img {
@@ -22,6 +23,35 @@
   border: 1px solid var(--logout-btn-border);
   border-radius: var(--button-border-radius);
   background-color: #f2f1ed;
+  margin-top: auto;
+  margin-bottom: 12px;
+}
+
+.status_badge {
+  padding: 8px 10px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+
+.status_home {
+  background: #edf7ed;
+}
+
+.status_foster {
+  background: #fff1dd;
+}
+
+.status_text {
+  font-weight: 600;
+  color: #212121;
+}
+
+.contract {
+  min-height: 40px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cat_color {
@@ -29,7 +59,16 @@
 }
 
 .name_n_date_box {
-  text-align: left;
+  width: 100%;
+  text-align: center;
+}
+
+.data_box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .link {
@@ -58,9 +97,10 @@
 
   .data_box {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+    justify-content: flex-start;
+    align-items: center;
     width: 100%;
+    gap: 0;
   }
 
   .name {

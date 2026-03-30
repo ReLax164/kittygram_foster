@@ -62,6 +62,37 @@
   margin: 35px 0;
 }
 
+.status_box {
+  padding: 10px 14px;
+  border-radius: var(--button-border-radius);
+  margin-top: 24px;
+}
+
+.status_home {
+  background: #edf7ed;
+}
+
+.status_foster {
+  background: #fff1dd;
+}
+
+.status_text {
+  font-weight: 600;
+  color: #212121;
+}
+
+.contract_box {
+  margin-top: 18px;
+}
+
+.contract_title {
+  margin-bottom: 6px;
+}
+
+.contract_text {
+  font-weight: 500;
+}
+
 .cat_color {
   font-weight: 600;
 }

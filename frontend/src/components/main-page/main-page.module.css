@@ -13,6 +13,30 @@
   gap: 20px;
 }
 
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filter_btn {
+  min-width: 150px;
+  height: 42px;
+  border: 1px solid rgba(33, 33, 33, 0.12);
+  border-radius: 16px;
+  background: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter_btn_active {
+  background: #ffede2;
+  border-color: #ff6b2c;
+}
+
 @media screen and (max-width: 800px) {
   .box {
     gap: 14px;

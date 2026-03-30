@@ -1,6 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+import {
+  formatDisplayDate,
+  ownershipStatusLabels,
+} from "../../utils/constants";
 import defaultImg from "../../images/default-kitty.jpg";
 
 import styles from "./main-card.module.css";
@@ -9,7 +13,9 @@ export const MainCard = ({
   cardId,
   name = "",
   date = "",
-  color = "Бежевый",
+  color = "white",
+  ownershipStatus = "home",
+  activeFosterContract = null,
   img,
   extraClass = "",
 }) => {
@@ -21,14 +27,14 @@ export const MainCard = ({
       ? "white"
       : "primary";
 
+  const statusLabel = ownershipStatusLabels[ownershipStatus] || "Не указан";
+  const statusClass =
+    ownershipStatus === "foster" ? styles.status_foster : styles.status_home;
+
   return (
     <article className={`${styles.content} ${extraClass}`}>
       <Link className={styles.link} to={`/cats/${cardId}`}>
-        <img
-          className={styles.img}
-          src={img ?? defaultImg}
-          alt="Фото котика."
-        />
+        <img className={styles.img} src={img ?? defaultImg} alt="Фото котика." />
       </Link>
       <div className={styles.data_box}>
         <div className={styles.name_n_date_box}>
@@ -43,16 +49,23 @@ export const MainCard = ({
             {date}
           </p>
         </div>
-        <div
-          className={styles.cat_color_box}
-          style={{ backgroundColor: color }}
-        >
+        <div className={styles.cat_color_box} style={{ backgroundColor: color }}>
           <p
             className={`text text_type_medium-20 text_color_${colorText} ${styles.cat_color}`}
           >
             {color}
           </p>
         </div>
+        <div className={`${styles.status_badge} ${statusClass}`}>
+          <p className={`text text_type_medium-16 ${styles.status_text}`}>
+            {statusLabel}
+          </p>
+        </div>
+        {activeFosterContract && (
+          <p className={`text text_type_medium-16 text_color_secondary ${styles.contract}`}>
+            {formatDisplayDate(activeFosterContract.start_date)} - {formatDisplayDate(activeFosterContract.end_date)}
+          </p>
+        )}
       </div>
     </article>
   );

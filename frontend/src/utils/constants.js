@@ -30,6 +30,52 @@ export const colorsNames = {
   "black": "#000000",
 };
 
+export const ownershipStatusLabels = {
+  home: "Домашний",
+  foster: "На передержке",
+};
+
+export const formatAchievementsText = (value) => {
+  if (!value) {
+    return "";
+  }
+
+  const items = Array.isArray(value)
+    ? value
+    : value
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+  return items
+    .map((item, index) => {
+      const normalized = item.trim();
+      if (!normalized) {
+        return "";
+      }
+      if (index === 0) {
+        return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+      }
+      return normalized.charAt(0).toLowerCase() + normalized.slice(1);
+    })
+    .filter(Boolean)
+    .join(", ");
+};
+
+export const formatDisplayDate = (value) => {
+  if (!value || typeof value !== "string") {
+    return value;
+  }
+
+  const parts = value.split("-");
+  if (parts.length !== 3) {
+    return value;
+  }
+
+  const [year, month, day] = parts;
+  return `${day}.${month}.${year}`;
+};
+
 export const getBase64 = (file) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

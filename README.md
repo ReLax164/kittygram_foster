@@ -137,8 +137,8 @@ POST /api/token/login/
 
 ```json
 {
-  "username": "olga",
-  "password": "olgapass"
+  "username": "your_username",
+  "password": "your_password"
 }
 ```
 
@@ -205,7 +205,7 @@ Authorization: Token <ваш_токен>
   "end_date": "2026-04-10",
   "closed_at": "2026-03-28",
   "status": "closed",
-  "created_by": "olga",
+  "created_by": "current_user",
   "created_at": "2026-03-27T12:00:00Z"
 }
 ```
@@ -227,7 +227,7 @@ docker compose down
 
 ## Работа с Postman
 
-Для проверки API в проект добавлена коллекция `kittygram_foster_postman_collection_ready.json`.
+Для проверки API в проект добавлена коллекция `kittygram_foster_postman_collection.json`.
 
 Коллекция содержит готовые запросы и позволяет не вводить токен вручную для каждого эндпоинта.
 
@@ -235,23 +235,24 @@ docker compose down
 
 1. Открыть `Postman`.
 2. Нажать кнопку `Import`.
-3. Выбрать файл `kittygram_foster_postman_collection_ready.json` из корня проекта.
+3. Выбрать файл `kittygram_foster_postman_collection.json` из корня проекта.
 4. В левой панели открыть импортированную коллекцию `Kittygram Foster API`.
 5. Сначала выполнить запрос `1. Login`.
-6. После успешного ответа токен автоматически сохранится в переменную коллекции `token`.
-7. Далее можно выполнять остальные запросы без ручного копирования токена в заголовки.
-8. Для демонстрационных данных по умолчанию используется `catId=10` (кот `Беляш`).
+6. Перед отправкой запроса `1. Login` при необходимости задать свои значения переменных `username` и `password` в коллекции Postman.
+7. После успешного ответа токен автоматически сохранится в переменную коллекции `token`.
+8. Далее можно выполнять остальные запросы без ручного копирования токена в заголовки.
+9. Для демонстрационных данных по умолчанию используются `catId=10` (кот `Беляш`) и `ownershipStatusId=9` (его текущий статус владения).
 
 Назначение основных запросов:
 - `1. Login` — получение и автоматическое сохранение токена;
 - `2. Get Foster Cats` — получение списка котов на передержке;
-- `3. Create Ownership Status` — назначение коту статуса `foster`;
+- `3. Update Ownership Status` — обновление существующего статуса владения кота на `foster`;
 - `4. Create Foster Contract` — создание договора передержки;
 - `5. Close Foster Contract` — закрытие ранее созданного договора.
 
 Если требуется проверить создание и закрытие договора подряд, достаточно выполнить запросы в следующем порядке:
 1. `1. Login`
-2. `3. Create Ownership Status`
+2. `3. Update Ownership Status`
 3. `4. Create Foster Contract`
 4. `5. Close Foster Contract`
 

@@ -15,7 +15,7 @@ services:
     container_name: kittygram_backend
     env_file: .env
     volumes:
-      - static:/backend_static
+      - static:/app/collected_static
       - media:/app/media
     depends_on:
       - db
@@ -32,6 +32,9 @@ services:
     build: ./nginx/
     container_name: kittygram_gateway
     env_file: .env
+    depends_on:
+      - backend
+      - frontend
     ports:
       - 9000:80
     volumes:

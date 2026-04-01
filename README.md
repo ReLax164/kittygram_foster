@@ -97,12 +97,13 @@ docker compose up --build -d
 docker compose exec backend python manage.py migrate
 ```
 
-5. Собрать статические файлы и подготовить их для раздачи через `nginx`:
+5. Собрать статические файлы:
 
 ```bash
 docker compose exec backend python manage.py collectstatic --no-input
-docker compose exec backend cp -r /app/collected_static/. /backend_static/static/
 ```
+
+После выполнения команды статические файлы сразу окажутся в общем Docker-томе и будут доступны для раздачи через `nginx`.
 
 6. При необходимости создать суперпользователя:
 
